@@ -11,5 +11,9 @@ export const useUserStore = defineStore('user', () => {
   //   count.value++
   // }
 
-  return { token,updateToken}
+  return { token,updateToken}},
+  
+    {persist:{
+      path:['token']
+    }
 })
