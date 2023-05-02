@@ -6,6 +6,7 @@ import LoginView from '../views/Login.vue'
 import MyselfView from '../views/Myself.vue'
 import ExamView from '../views/Exam.vue'
 import MymarkView from '../views/Mymark.vue'
+import ModifydataView from '../views/Modifydata.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -38,6 +39,12 @@ const router = createRouter({
       path: '/mymark',
       name: '我的成绩',
       component:MymarkView,
+      meta:{auth:true}
+    },
+    {
+      path: '/modifydata',
+      name: '修改资料',
+      component:ModifydataView,
       meta:{auth:true}
     }
   ]
