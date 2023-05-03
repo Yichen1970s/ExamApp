@@ -9,6 +9,7 @@ import MymarkView from '../views/Mymark.vue'
 import ExamDetailView from '../views/ExamDetail.vue'
 import ExamStartView from '../views/ExamStart.vue'
 import ExamResultView from '../views/ExamResult.vue'
+import ModifydataView from '../views/Modifydata.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -59,6 +60,12 @@ const router = createRouter({
       path: '/examresult/:id?',
       name: '结果详情',
       component:ExamResultView,
+      meta:{auth:true}
+    },
+    {
+      path: '/modifydata',
+      name: '修改资料',
+      component:ModifydataView,
       meta:{auth:true}
     }
   ]

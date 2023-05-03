@@ -8,11 +8,17 @@ import router from './router'
 
 import vant from 'vant';
 import 'vant/lib/index.css';
+import { Uploader } from 'vant';
+import { Form, Field, CellGroup } from 'vant'
 
 const app = createApp(App)
 
 app.use(pinia)
 app.use(router)
 app.use(vant)
+app.use(Uploader)
+app.use(Form);
+app.use(Field);
+app.use(CellGroup);
 
 app.mount('#app')
