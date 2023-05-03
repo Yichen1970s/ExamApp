@@ -6,6 +6,9 @@ import LoginView from '../views/Login.vue'
 import MyselfView from '../views/Myself.vue'
 import ExamView from '../views/Exam.vue'
 import MymarkView from '../views/Mymark.vue'
+import ExamDetailView from '../views/ExamDetail.vue'
+import ExamStartView from '../views/ExamStart.vue'
+import ExamResultView from '../views/ExamResult.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -39,6 +42,24 @@ const router = createRouter({
       name: '我的成绩',
       component:MymarkView,
       meta:{auth:true}
+    },
+    {
+      path: '/examdetail/:id?',
+      name: '考试详情',
+      component:ExamDetailView,
+      meta:{auth:true}
+    },
+    {
+      path: '/examstart/:id?',
+      name: '正在考试',
+      component:ExamStartView,
+      meta:{auth:true}
+    },
+    {
+      path: '/examresult/:id?',
+      name: '结果详情',
+      component:ExamResultView,
+      meta:{auth:true}
     }
   ]
 })
@@ -49,10 +70,12 @@ router.beforeEach((to,from,next)=>{
     //校验token是否合法,通过请求头携带
     const userStore=useUserStore()
     const token = userStore.token
+    const userId=userStore.userId
     if(token){
       info({token:token}).then(res=>{
-        console.log(res);
         if(res.data.code===0){
+          userStore.updateUserId(res.data.data.id)
+          userStore.updateUsername(res.data.data.userName)
           next()
         }else{
           alert('登陆已过期')
