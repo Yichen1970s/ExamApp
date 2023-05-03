@@ -1,6 +1,6 @@
 import axios from 'axios'
-// import {useUserStore} from '../stores/user'
-// const userStore=useUserStore()
+import {useUserStore} from '../stores/user'
+
 const instance = axios.create({
   baseURL: '/api',
   timeout: 5000
@@ -9,8 +9,9 @@ const instance = axios.create({
 // 添加请求拦截器
 instance.interceptors.request.use(function (config) {
   // 在发送请求之前做些什么
-  // const token = userStore.token
-  // config.headers.token = token
+  const userStore=useUserStore()
+  const token = userStore.token
+  config.headers.token = token
   return config
 }, function (error) {
   // 对请求错误做些什么

@@ -23,7 +23,6 @@
     </van-grid-item>
     </van-grid>
     </div>
-    <button @click="handlesee">看一看</button>
     <Footer :active="0"></Footer>
   </div>
 </template>
@@ -34,10 +33,8 @@ import Footer from '../components/Footer.vue'
 import { showDialog } from 'vant'
 import { useRouter } from 'vue-router';
 import {useUserStore} from '../stores/user'
-const userStore=useUserStore()
-const handlesee=()=>{
-  console.log(userStore.token);
-}
+
+
 const router =useRouter()
 const images = [
   'http://127.0.0.1:5173/src/assets/image/01.jpg',

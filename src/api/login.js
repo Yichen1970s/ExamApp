@@ -2,11 +2,12 @@ import http from '../utils/http'
 function Login(data){
     return http.post('/exam/api/sys/user/login',data)
 }
-function test(data){
-    return http.post('/exam/api/exam/exam/online-paging',data)
+
+function info(data){
+    return http.post('https://lite.yfhl.net/exam/api/sys/user/info?token='+data.token)
 }
 
 export {
 Login,
-test
+info
 }
