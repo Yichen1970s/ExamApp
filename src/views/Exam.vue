@@ -70,7 +70,7 @@ onMounted(() => {
     const datalist=[...res.data.data.records]
     res.data.data.records.forEach((item,index)=>{
       if(!item.startTime){
-        datalist[i].disable=false
+        datalist[index].disable=false
       }else{
         const nowtime = new Date()
         const starttime=item.startTime
