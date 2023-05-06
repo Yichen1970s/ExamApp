@@ -11,6 +11,7 @@ import ExamStartView from '../views/ExamStart.vue'
 import ExamResultView from '../views/ExamResult.vue'
 import ModifydataView from '../views/Modifydata.vue'
 import ChangePasswordView from '../views/ChangePassword.vue'
+import MymarkRecords from '../views/MymarkRecords.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -43,6 +44,12 @@ const router = createRouter({
       path: '/mymark',
       name: '我的成绩',
       component:MymarkView,
+      meta:{auth:true}
+    },
+    {
+      path: '/mymarkrecords',
+      name: '考试记录',
+      component:MymarkRecords,
       meta:{auth:true}
     },
     {
