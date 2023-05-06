@@ -12,11 +12,11 @@ export default defineConfig({
   plugins: [vue()],
 
   server: {
-    port: "5173",
+    port: "5174",
     proxy: {
       "/api": {
-        target: "https://lite.yfhl.net/",
-        // target: "http://192.168.60.130:8101/",
+        // target: "https://lite.yfhl.net/",
+        target: "http://192.168.60.130:8101/",
         changeOrigin: true,
         rewrite: (path) => path.replace(/^\/api/, ""),
       },

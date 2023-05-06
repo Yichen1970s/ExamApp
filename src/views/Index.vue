@@ -37,10 +37,17 @@ import { useUserStore } from '../stores/user'
 
 const router = useRouter()
 const images = [
+<<<<<<< HEAD
   'http://localhost:5173/src/assets/image/01.jpg',
   'http://localhost:5173/src/assets/image/02.jpg',
   'http://localhost:5173/src/assets/image/03.jpg',
   'http://localhost:5173/src/assets/image/04.jpg'
+=======
+  'http://127.0.0.1:5174/src/assets/image/01.jpg',
+  'http://127.0.0.1:5174/src/assets/image/02.jpg',
+  'http://127.0.0.1:5174/src/assets/image/03.jpg',
+  'http://127.0.0.1:5174/src/assets/image/04.jpg'
+>>>>>>> 6f74d54d85fe9f11c1b968b90991f8dae90525b6
 ]
 const icons = [
   { text: '课程学习', icon: 'edit', color: "green" },

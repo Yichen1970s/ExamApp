@@ -3,10 +3,11 @@
     <van-nav-bar title="正在考试" left-text="返回" left-arrow @click-left="onClickLeft" />
     <div class="box">
       <div class="timebox">
-        考试剩余时间:<van-count-down :time="time" format="HH 时 mm 分 ss 秒" /><van-button
+        考试剩余时间:<van-count-down :time="time" format="HH 时 mm 分 ss 秒" @finish="timeChange"/><van-button
           type="primary"
           size="small"
           @click="handleSubmitExam"
+          ref="myElement"
           >提交试卷</van-button
         >
       </div>
@@ -78,10 +79,10 @@ import { ExamStartDetail, TimuDetail,AnswerContent,submitExam } from '../api/exa
 import { showConfirmDialog } from 'vant';
 
 
-
+const myElement = ref()
 const router = useRouter()
 const route = useRoute()
-const time = ref(0) //时间
+const time = ref(1000) //时间
 const judgeList = ref([])
 const multiList = ref([])
 const radioList = ref([])
@@ -95,6 +96,34 @@ const checkedValue = ref('')
 const checkedValue1 = ref([])//多选答案
 const onClickLeft = () => {
   router.back(1)
+}
+
+const timeChange=(a)=>{
+  let answerValue=[]
+  if(checkedValue.value!=''){
+    answerValue.push(checkedValue.value)
+  }else if(checkedValue.value===''){
+    answerValue=[...checkedValue1.value]
+  }
+  const data={
+    paperId:examList.value[examNumber.value - 1].paperId,
+    quId: examList.value[examNumber.value - 1].quId,
+    answer:'',
+    answers:answerValue
+  }
+  AnswerContent(data).then(res=>{
+    console.log(res.data);
+  })
+  checkedValue.value='',
+  checkedValue1.value=[]
+    submitExam({id:route.params.id}).then(res=>{  
+    console.log(res.data);
+    if(res.data.code===0){
+      alert('到点了 试卷已自动提交')
+      router.push(`/examresult/${route.params.id}`)
+    }
+  })
+
 }
 
     const checkboxRefs = ref([]);
