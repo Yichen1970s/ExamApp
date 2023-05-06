@@ -10,7 +10,7 @@ import vant from 'vant';
 import 'vant/lib/index.css';
 import { Uploader } from 'vant';
 import { Form, Field, CellGroup } from 'vant'
-
+import { Dialog } from 'vant';
 const app = createApp(App)
 
 app.use(pinia)
@@ -20,5 +20,6 @@ app.use(Uploader)
 app.use(Form);
 app.use(Field);
 app.use(CellGroup);
+app.use(Dialog);
 
 app.mount('#app')

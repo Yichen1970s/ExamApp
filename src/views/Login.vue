@@ -39,7 +39,7 @@ const userStore=useUserStore()
 const router=useRouter()
 const onSubmit = (values) => {
     Login(values).then(res=>{
-        console.log(res);
+        console.log(res.data.data);
         if(res.data.code===0){
           userStore.updateToken(res.data.data.token)
           console.log(userStore.token);
