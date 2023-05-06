@@ -34,7 +34,10 @@ const handleToStart=()=>{
     createExam({examId:route.params.id}).then(res=>{
         if(res.data.code === 0){
             router.push(`/examstart/${res.data.data.id}`)
-        }else{
+        }else if(res.data.msg==='考试状态不正确！'){
+          alert('未到考试时间')
+        }
+        else{
             alert('您有正在进行的考试')
         }
     })

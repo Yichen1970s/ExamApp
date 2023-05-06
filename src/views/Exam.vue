@@ -22,6 +22,8 @@
         :title="item.title"
       >
         <template #tags>
+          <div>开始时间: <van-tag plain type="primary">{{item.startTime?item.startTime:'无期限'}}</van-tag></div>
+          <div>截止时间: <van-tag plain type="danger">{{item.endTime?item.endTime:'无期限'}}</van-tag></div>
           <div>考试描述: <van-tag plain type="warning">{{item.content}}</van-tag></div>
           <div>总分: <van-tag plain type="warning">{{item.totalScore}}分</van-tag></div>
           <div>考试时间: <van-tag plain type="primary">{{ item.timeLimit ?  '限定时段':'不限定时段' }}</van-tag></div>
@@ -64,6 +66,16 @@ onMounted(() => {
   }
   console.log(data)
   ExamPaging(data).then((res) => {
+    console.log(res.data.data.records);
+    const datalist=[...res.data.data.records]
+    res.data.data.records.forEach((item,index)=>{
+      if(!item.startTime){
+        datalist[i].disable=false
+      }else{
+        const nowtime = new Date()
+        const starttime=item.startTime
+      }
+    })
      examList.value = res.data.data.records
     totalItems.value = examList.value.length
   })

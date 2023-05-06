@@ -43,6 +43,9 @@ const http = {
   },
   delete(url, data, config) {
     return instance.delete(url, { data }, config)
+  },
+  postquery(url, query, config) {
+    return instance.post(url, query, config)
   }
 }
 

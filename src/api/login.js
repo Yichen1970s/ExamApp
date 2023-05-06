@@ -4,7 +4,7 @@ function Login(data){
 }
 
 function info(data){
-    return http.post('https://lite.yfhl.net/exam/api/sys/user/info?token='+data.token)
+    return http.post('/exam/api/sys/user/info?token='+data.token)
 }
 
 export {
