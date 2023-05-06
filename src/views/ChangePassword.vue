@@ -45,6 +45,9 @@ const onSubmit = () => {
     }
     
 }
+const onClickLeft = () => {
+    router.back(1)
+}
 </script>
 
 <style lang="scss" scoped>

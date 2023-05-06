@@ -19,23 +19,24 @@ import { ref } from 'vue'
 import { info } from '../api/login'
 import { departList } from '../api/my'
 import { useUserStore } from '../stores/user'
+import { useRouter } from 'vue-router';
+const router = useRouter()
+
 const username = ref()
 const name = ref()
-const password = ref()
 const depart = ref()
+const depart1 = ref()
 const roles = ref()
 const data = {}
 const arr=ref([])
-const onSubmit = (res) => {
-    console.log(res);
-}
+
 const userStore = useUserStore()
 const token = userStore.token
 info({ token: token }).then(res=>{
     // console.log(res.data.data);
     username.value= res.data.data.userName
     name.value= res.data.data.realName
-    depart.value= res.data.data.departId
+    depart1.value= res.data.data.departId
     roles.value= res.data.data.roles
 })
 departList(data).then(res => {
@@ -43,7 +44,7 @@ departList(data).then(res => {
     arr.value = res.data.data[0].children
     console.log(arr.value);
     for (var i = 0; i < arr.value.length;i++){
-        if (depart.value== arr.value[i].id) {
+        if (depart1.value== arr.value[i].id) {
             depart.value = arr.value[i].deptName
             
         }
@@ -51,6 +52,9 @@ departList(data).then(res => {
     }
     
 })
+const onClickLeft = () => {
+    router.back(1)
+}
 </script>
 
 <style scoped>

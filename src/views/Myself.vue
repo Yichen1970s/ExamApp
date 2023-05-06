@@ -47,6 +47,9 @@ info({ token: token }).then(res => {
   console.log(res.data.data);
   studentName.value = res.data.data.realName
 })
+const onClickLeft = () => {
+  router.back(1)
+}
 </script>
 
 <style lang="scss" scoped>
