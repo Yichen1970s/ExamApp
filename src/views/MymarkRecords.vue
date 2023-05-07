@@ -21,13 +21,17 @@
 import { ref,onMounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { getExamfirstpaging, getExamXiangQing } from '../api/mark'
+import { useUserStore } from '../stores/user'
+const userStore=useUserStore()
+const userid=userStore.userId
+
 const router = useRouter()
 const markList=ref([])
 onMounted(() => {
-  getExamfirstpaging({current: 1, size: 5, params: {userId: "10001", examId: "1654681483156914177"}}).then((res)=>{
+  getExamfirstpaging({current: 1, size: 5, params: {userId: userid, examId: "1654681483156914177"}}).then((res)=>{
+    console.log(userid,123);
     console.log(res.data.data.records); 
     markList.value = res.data.data.records
-    // console.log(markList.value);
   })
 })
 const onClickLeft = () => {

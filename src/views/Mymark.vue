@@ -2,7 +2,7 @@
   <div>
     <van-nav-bar title="我的成绩" left-text="返回" left-arrow @click-left="onClickLeft" />
 
-    <div class="box" v-for="item in testList">
+    <div class="box" v-for="item in testList" :key="item.id">
       <div class="wrap">
         <div class="words">
           <p class="h1">{{ item.title }}</p>
@@ -29,6 +29,8 @@ import { ref,onMounted } from 'vue';
 import Footer from '../components/Footer.vue'
 import { useRouter } from 'vue-router';
 import { getExampaging, getExamXiangQing } from '../api/mark'
+
+
 const router = useRouter()
 const testList=ref([])
 onMounted(() => {
