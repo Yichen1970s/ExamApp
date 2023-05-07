@@ -12,6 +12,16 @@
         >
       </div>
       <div class="allArea">
+
+        <van-overlay :show="show" @click="handleClickStopCard">
+  <div class="wrapper" >
+    <div class="block" >
+      <div :class="item.answered? 'cardStyleChoose':'cardStyleNoChoose'" v-for="(item,index) in cardList" :key="index" @click="handleClicktoCareExam(index+1)">{{index+1}}</div>
+        
+      
+    </div>
+  </div>
+</van-overlay>
         <div class="examArea">
           <div style="color: rgb(159 107 107); margin-bottom: 5px">
             {{ examNumber }}.[{{ examType }}] {{ examScore }}分
@@ -65,7 +75,7 @@
             @click="handleTest(1)"
             >下一题</van-button
           >
-          <van-button type="success" size="small">答题卡</van-button>
+          <van-button type="success" size="small" @click="handleToCard">答题卡</van-button>
         </div>
       </div>
     </div>
@@ -77,8 +87,9 @@ import { ref, watch,onBeforeUpdate } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { ExamStartDetail, TimuDetail,AnswerContent,submitExam } from '../api/exam'
 import { showConfirmDialog } from 'vant';
+import {showDialog} from 'vant'
 
-
+const show=ref(false)
 const myElement = ref()
 const router = useRouter()
 const route = useRoute()
@@ -87,6 +98,7 @@ const judgeList = ref([])
 const multiList = ref([])
 const radioList = ref([])
 const examList = ref([]) //题id组
+const cardList=ref([])
 const examType = ref('单选题')
 const examNumber = ref(1) //当前题号
 const examScore = ref(0)
@@ -97,6 +109,7 @@ const checkedValue1 = ref([])//多选答案
 const onClickLeft = () => {
   router.back(1)
 }
+
 
 const timeChange=(a)=>{
   let answerValue=[]
@@ -126,8 +139,75 @@ const timeChange=(a)=>{
 
 }
 
+// 点击答题卡
+const handleToCard=()=>{
+  show.value=true
+  //防止最后一题忘交
+  let answerValue=[]
+  if(checkedValue.value!=''){
+    answerValue.push(checkedValue.value)
+  }else if(checkedValue.value===''){
+    answerValue=[...checkedValue1.value]
+  }
+  const data={
+    paperId:examList.value[examNumber.value - 1].paperId,
+    quId: examList.value[examNumber.value - 1].quId,
+    answer:'',
+    answers:answerValue
+  }
+  AnswerContent(data).then(res=>{
+    console.log(res.data);
+  })
+  checkedValue.value='',
+  checkedValue1.value=[]
+
+  ExamStartDetail({ id: route.params.id }).then((res) => {
+    judgeList.value = res.data.data.judgeList
+  multiList.value = res.data.data.multiList
+  radioList.value = res.data.data.radioList
+  examList.value = [...radioList.value, ...multiList.value, ...judgeList.value]
+  cardList.value=[...examList.value]
+  })
+}
+const handleClickStopCard=()=>{
+  show.value=false
+}
+//点击题号 跳转当前题
+const handleClicktoCareExam=(tihao)=>{
+
+ 
+  show.value=false
+  examNumber.value=tihao //当前题号
+  TimuDetail({
+    paperId: examList.value[examNumber.value - 1].paperId,
+    quId: examList.value[examNumber.value - 1].quId
+  }).then((res) => {
+    answerList.value = res.data.data.answerList
+    content.value = res.data.data.content
+    if(res.data.data.answered){
+      if(res.data.data.quType!==2){
+        //有答案且不为多选
+        res.data.data.answerList.forEach((item)=>{
+          if(item.checked===true){
+            checkedValue.value=item.id
+          }
+        })
+      }else{
+        //有答案 且为多选
+        res.data.data.answerList.forEach((item)=>{
+          if(item.checked===true){
+            checkedValue1.value.push(item.id)
+          }
+        })
+      }
+    }
+  })
+}
+
+
+
+
     const checkboxRefs = ref([]);
-    const list=ref(['a', 'b'])
     const toggle = (index) => {
       checkboxRefs.value[index].toggle();
       console.log(checkedValue1.value);
@@ -146,6 +226,7 @@ ExamStartDetail({ id: route.params.id }).then((res) => {
   multiList.value = res.data.data.multiList
   radioList.value = res.data.data.radioList
   examList.value = [...radioList.value, ...multiList.value, ...judgeList.value]
+  cardList.value=[...examList.value]
   examScore.value = examList.value[examNumber.value - 1].score //初始化分数
   TimuDetail({
     paperId: examList.value[examNumber.value - 1].paperId,
@@ -220,7 +301,6 @@ const handleTest = (number) => {
       }
     }
   })
-
 }
 watch(examNumber, () => {
   // console.log(examList.value[examNumber.value - 1])
@@ -242,32 +322,33 @@ const hanleClickAnswer = (answer) => {
 //交卷
 const handleSubmitExam=()=>{
   
-  showConfirmDialog({
+   //检测是否有题未答
+   ExamStartDetail({ id: route.params.id }).then((res) => {
+    judgeList.value = res.data.data.judgeList
+  multiList.value = res.data.data.multiList
+  radioList.value = res.data.data.radioList
+  examList.value = [...radioList.value, ...multiList.value, ...judgeList.value]
+  cardList.value=[...examList.value]
+  })
+  let count=0
+  cardList.value.forEach(item=>{
+    if(!item.answered){
+      count++
+    }
+  })
+  console.log(count);
+  if(count===0){
+    //都回答了
+    showConfirmDialog({
   title: '标题',
   message:
     '是否要提交试卷',
 })
   .then(() => {
-    let answerValue=[]
-  if(checkedValue.value!=''){
-    answerValue.push(checkedValue.value)
-  }else if(checkedValue.value===''){
-    answerValue=[...checkedValue1.value]
-  }
-  const data={
-    paperId:examList.value[examNumber.value - 1].paperId,
-    quId: examList.value[examNumber.value - 1].quId,
-    answer:'',
-    answers:answerValue
-  }
-  AnswerContent(data).then(res=>{
-    console.log(res.data);
-  })
-  checkedValue.value='',
-  checkedValue1.value=[]
     submitExam({id:route.params.id}).then(res=>{  
     console.log(res.data);
     if(res.data.code===0){
+      showDialog({ message: '交卷成功' });
       router.push(`/examresult/${route.params.id}`)
     }
   })
@@ -276,7 +357,27 @@ const handleSubmitExam=()=>{
     // on cancel
   });
  
+}else{
+  showConfirmDialog({
+  title: '标题',
+  message:
+    `您还有${count}道题未答 是否交卷?`,
+}) .then(() => {
+    submitExam({id:route.params.id}).then(res=>{  
+    console.log(res.data);
+    if(res.data.code===0){
+      showDialog({ message: '交卷成功' });
+      router.push(`/examresult/${route.params.id}`)
+    }
+  })
+  })
+  .catch(() => {
+    // on cancel
+  });
+  }
+
 }
+ 
 </script>
 
 <style lang="scss" scoped>
@@ -322,4 +423,37 @@ const handleSubmitExam=()=>{
   display: flex;
   justify-content: space-between;
 }
+
+
+.wrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+  }
+
+  .block {
+    width: 250px;
+    min-height: 250px;
+    background-color: #fff;
+    display: flex;
+    flex-wrap: wrap;
+    align-content:flex-start;
+    text-align: center;
+    line-height: 40px;
+
+  }
+  .cardStyleChoose{
+    width: 40px;
+    margin: 5px;
+    height: 40px;
+    background: greenyellow;
+    
+  }
+  .cardStyleNoChoose{
+    width: 40px;
+    margin: 5px;
+    height: 40px;
+    background: red;
+  }
 </style>

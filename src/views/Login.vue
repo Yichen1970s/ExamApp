@@ -33,6 +33,7 @@ import { ref, } from 'vue';
 import { useRouter } from 'vue-router';
 import {Login} from '../api/login'
 import {useUserStore} from '../stores/user'
+import {showDialog} from 'vant'
 const username = ref('') 
 const password = ref('')
 const userStore=useUserStore()
@@ -43,6 +44,7 @@ const onSubmit = (values) => {
         if(res.data.code===0){
           userStore.updateToken(res.data.data.token)
           console.log(userStore.token);
+          showDialog({ message: '登陆成功' });
           router.push('/')
         }
         console.log(111);

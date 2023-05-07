@@ -1,6 +1,7 @@
 <template>
   <div>
     <van-nav-bar title="在线考试" left-text="返回" left-arrow @click-left="onClickLeft" />
+
     <van-search
       v-model="title"
       placeholder="请输入搜索关键词"
@@ -15,27 +16,61 @@
       <van-tab title="指定类型"></van-tab>
     </van-tabs>
 
-<div class="box">
-  <div class="examItem" v-for="item in examList">
-      <van-card
-        :desc="item.createTime"
-        :title="item.title"
-      >
-        <template #tags>
-          <div>开始时间: <van-tag plain type="primary">{{item.startTime?item.startTime:'无期限'}}</van-tag></div>
-          <div>截止时间: <van-tag plain type="danger">{{item.endTime?item.endTime:'无期限'}}</van-tag></div>
-          <div>考试描述: <van-tag plain type="warning">{{item.content}}</van-tag></div>
-          <div>总分: <van-tag plain type="warning">{{item.totalScore}}分</van-tag></div>
-          <div>考试时间: <van-tag plain type="primary">{{ item.timeLimit ?  '限定时段':'不限定时段' }}</van-tag></div>
-          <div>考试时常: <van-tag plain type="primary">{{ item.totalTime}}分钟</van-tag></div>
-          <div>考试类型: <van-tag plain type="danger">{{ item.openType===1?'完全公开':'指定部门'}}</van-tag></div>
-          <van-button type="primary" class="examButton" size="small" @click="handleToExamDetail(item.id)"><van-icon name="arrow" /></van-button>
-        </template>
-      </van-card>
+    <div class="box">
+      <van-notice-bar
+        wrapable
+        :scrollable="false"
+        text="您有正在进行的考试! 点击进入继续考试！"
+        color="red"
+        @click="hanldeToContinueExam"
+        v-show="isShow"
+      />
+      <div class="examItem" v-for="item in examList">
+        <van-card :desc="item.createTime" :title="item.title">
+          <template #tags>
+            <div>
+              开始时间:
+              <van-tag plain type="primary">{{
+                item.startTime ? item.startTime : '无期限'
+              }}</van-tag>
+            </div>
+            <div>
+              截止时间:
+              <van-tag plain type="danger">{{ item.endTime ? item.endTime : '无期限' }}</van-tag>
+            </div>
+            <div>
+              考试描述: <van-tag plain type="warning">{{ item.content }}</van-tag>
+            </div>
+            <div>
+              总分: <van-tag plain type="warning">{{ item.totalScore }}分</van-tag>
+            </div>
+            <div>
+              考试时间:
+              <van-tag plain type="primary">{{
+                item.timeLimit ? '限定时段' : '不限定时段'
+              }}</van-tag>
+            </div>
+            <div>
+              考试时常: <van-tag plain type="primary">{{ item.totalTime }}分钟</van-tag>
+            </div>
+            <div>
+              考试类型:
+              <van-tag plain type="danger">{{
+                item.openType === 1 ? '完全公开' : '指定部门'
+              }}</van-tag>
+            </div>
+            <van-button
+              type="primary"
+              class="examButton"
+              size="small"
+              @click="handleToExamDetail(item.id)"
+              ><van-icon name="arrow"
+            /></van-button>
+          </template>
+        </van-card>
+      </div>
+      <van-pagination v-model="current" :total-items="totalItems" :items-per-page="size" />
     </div>
-    <van-pagination v-model="current" :total-items="totalItems" :items-per-page="size" />
-</div>
-    
 
     <Footer :active="1" class="footer"></Footer>
   </div>
@@ -43,19 +78,21 @@
 
 <script setup>
 import Footer from '../components/Footer.vue'
-import { ExamPaging } from '../api/exam'
+import { ExamPaging, CheckExaming } from '../api/exam'
 import { ref, onMounted } from 'vue'
 import { useUserStore } from '../stores/user'
 import { useRouter } from 'vue-router'
-const router=useRouter()
-import _default from 'vant';
+const router = useRouter()
+import _default from 'vant'
 const userStore = useUserStore()
 const title = ref('')
 const openType = ref(0)
 const current = ref(1)
 const size = ref(10)
 const totalItems = ref(0)
-const examList=ref([])
+const examList = ref([])
+const isShow = ref(false)
+const ExamimgId = ref(0)
 // ExamPaging()
 onMounted(() => {
   const data = {
@@ -66,57 +103,69 @@ onMounted(() => {
   }
   console.log(data)
   ExamPaging(data).then((res) => {
-    console.log(res.data.data.records);
-    const datalist=[...res.data.data.records]
-    res.data.data.records.forEach((item,index)=>{
-      if(!item.startTime){
-        datalist[index].disable=false
-      }else{
+    console.log(res.data.data.records)
+    const datalist = [...res.data.data.records]
+    res.data.data.records.forEach((item, index) => {
+      if (!item.startTime) {
+        datalist[index].disable = false
+      } else {
         const nowtime = new Date()
-        const starttime=item.startTime
+        const starttime = item.startTime
       }
     })
-     examList.value = res.data.data.records
+    examList.value = res.data.data.records
     totalItems.value = examList.value.length
+  })
+  CheckExaming({}).then((res) => {
+    console.log(res.data)
+    if (res.data.data) {
+      //有正在进的的考试
+      isShow.value = true
+      ExamimgId.value = res.data.data.id
+    }
   })
 })
-const onClickLeft=()=>{
+const onClickLeft = () => {
   router.back(1)
 }
-const handleChangeType=()=>{
-  if(openType.value===0){
-    openType.value=''
+const handleChangeType = () => {
+  if (openType.value === 0) {
+    openType.value = ''
   }
   const data = {
     current: current.value,
     size: size.value,
-    params: { title: title.value,openType:openType.value },
+    params: { title: title.value, openType: openType.value },
     t: userStore.userId
   }
   ExamPaging(data).then((res) => {
-     examList.value = res.data.data.records
+    examList.value = res.data.data.records
     totalItems.value = examList.value.length
   })
 }
-const handleSearchChange=()=>{
-  console.log(openType.value);
-  if(openType.value===0){
-    openType.value=''
+const handleSearchChange = () => {
+  console.log(openType.value)
+  if (openType.value === 0) {
+    openType.value = ''
   }
   const data = {
     current: current.value,
     size: size.value,
-    params: { title: title.value,openType:openType.value },
+    params: { title: title.value, openType: openType.value },
     t: userStore.userId
   }
   ExamPaging(data).then((res) => {
-     examList.value = res.data.data.records
+    examList.value = res.data.data.records
     totalItems.value = examList.value.length
   })
 }
 
-const handleToExamDetail=(id)=>{
+const handleToExamDetail = (id) => {
   router.push(`/examdetail/${id}`)
+}
+//继续考试
+const hanldeToContinueExam = () => {
+  router.push(`/examstart/${ExamimgId.value}`)
 }
 </script>
 
@@ -128,7 +177,7 @@ const handleToExamDetail=(id)=>{
 :deep(.van-nav-bar__title) {
   color: white !important;
 }
-.box{
+.box {
   min-height: 100px;
   overflow: auto;
 }
@@ -136,23 +185,23 @@ const handleToExamDetail=(id)=>{
   margin-top: 10px;
   clear: both;
 }
-.examItem{
+.examItem {
   margin-bottom: 10px;
 }
-.examItem div{
+.examItem div {
   margin-bottom: 3px;
   position: relative;
 }
-.examButton{
+.examButton {
   position: absolute;
   right: 0px;
   top: 50%;
   transform: translateY(-50%);
 }
-.van-card__title van-multi-ellipsis--l2{
+.van-card__title van-multi-ellipsis--l2 {
   font-size: 30px;
 }
-.footer{
+.footer {
   margin-top: 50px;
 }
 </style>

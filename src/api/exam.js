@@ -32,6 +32,11 @@ function submitExam(data){
 function ExamScore(data){
     return http.post('exam/api/paper/paper/paper-result',data)
 }
+//检测是否有正在进行的考试
+function CheckExaming(data){
+    return http.post('exam/api/paper/paper/check-process',data)
+}
+
 
 export {
     ExamPaging,
@@ -41,5 +46,6 @@ export {
     TimuDetail,
     AnswerContent,
     submitExam,
-    ExamScore
+    ExamScore,
+    CheckExaming
 }
